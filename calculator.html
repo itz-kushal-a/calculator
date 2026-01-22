@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scientific Calculator</title>
+
+<style>
+/* ================= VARIABLES ================= */
+:root {
+    --bg: #1e1e2f;
+    --calc-bg: rgba(255,255,255,0.15);
+    --btn-bg: rgba(255,255,255,0.25);
+    --btn-hover: rgba(255,255,255,0.4);
+    --text: white;
+    --accent: #34c759;
+    --display-bg: rgba(0,0,0,0.6);
+    --display-text: #00ffcc;
+    --radius: 18px;
+    --font: "Segoe UI", sans-serif;
+}
+
+/* ================= LIGHT ================= */
+.light {
+    --bg: #f2f2f2;
+    --calc-bg: #ffffff;
+    --btn-bg: #e0e0e0;
+    --btn-hover: #d0d0d0;
+    --text: #111;
+    --accent: #007aff;
+    --display-bg: #fafafa;
+    --display-text: #000;
+}
+
+/* ================= NEON ================= */
+.neon {
+    --bg: radial-gradient(circle, #12002f, #000);
+    --calc-bg: rgba(0,0,0,0.75);
+    --btn-bg: rgba(0,255,255,0.18);
+    --btn-hover: rgba(0,255,255,0.35);
+    --text: #00ffff;
+    --accent: #ff00ff;
+    --display-bg: #000;
+    --display-text: #00ffff;
+}
+
+/* ================= MINECRAFT ================= */
+.minecraft {
+    --bg: #3a6b35;
+    --calc-bg: #4f7f3b;
+    --btn-bg: #7b7b7b;
+    --btn-hover: #9b9b9b;
+    --text: #ffffff;
+    --accent: #3cff00;
+    --display-bg: #2b2b2b;
+    --display-text: #3cff00;
+    --radius: 4px;
+    --font: "Courier New", monospace;
+}
+
+/* ================= BASE ================= */
+* {
+    box-sizing: border-box;
+    transition: background 0.25s, color 0.25s;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--bg);
+    font-family: var(--font);
+}
+
+.calculator {
+    width: 100%;
+    max-width: 360px;
+    background: var(--calc-bg);
+    padding: 18px;
+    border-radius: var(--radius);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.35);
+}
+
+.display {
+    width: 100%;
+    height: 60px;
+    font-size: 24px;
+    text-align: right;
+    padding: 12px;
+    border-radius: var(--radius);
+    border: none;
+    outline: none;
+    background: var(--display-bg);
+    color: var(--display-text);
+    margin-bottom: 10px;
+}
+
+/* ================= TOP BAR ================= */
+.top-bar {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin-bottom: 10px;
+}
+
+.top-bar button {
+    height: 34px;
+    font-size: 12px;
+}
+
+/* ================= SCI ================= */
+.scientific {
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.scientific.active {
+    display: grid;
+}
+
+/* ================= MAIN GRID ================= */
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+button {
+    height: 56px;
+    font-size: 18px;
+    border-radius: var(--radius);
+    border: none;
+    cursor: pointer;
+    background: var(--btn-bg);
+    color: var(--text);
+}
+
+button:hover {
+    background: var(--btn-hover);
+}
+
+button:active {
+    transform: scale(0.94);
+}
+
+.operator { color: var(--accent); }
+.equal {
+    background: var(--accent);
+    color: black;
+}
+.zero { grid-column: span 2; }
+.clear { color: #ff3b3b; }
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <button onclick="setTheme('auto')">Auto</button>
+        <button onclick="setTheme('dark')">Dark</button>
+        <button onclick="setTheme('light')">Light</button>
+        <button onclick="setTheme('neon')">Neon</button>
+        <button onclick="setTheme('minecraft')">MC</button>
+        <button onclick="toggleSci()">Sci</button>
+    </div>
+
+    <!-- DISPLAY -->
+    <input type="text" id="display" class="display" disabled>
+
+    <!-- SCIENTIFIC -->
+    <div class="scientific" id="sci">
+        <button onclick="addTrig('sin')">sin</button>
+        <button onclick="addTrig('cos')">cos</button>
+        <button onclick="addTrig('tan')">tan</button>
+        <button onclick="toggleAngle()">DEG</button>
+
+        <button onclick="add('Math.log10(')">log</button>
+        <button onclick="add('Math.sqrt(')">√</button>
+        <button onclick="add('Math.pow(')">xʸ</button>
+        <button onclick="add('Math.PI')">π</button>
+
+        <button onclick="add('!')">x!</button>
+        <button onclick="add('(')">(</button>
+        <button onclick="add(')')">)</button>
+        <button class="clear" onclick="clearDisplay()">C</button>
+    </div>
+
+    <!-- MAIN -->
+    <div class="buttons">
+        <button class="operator">/</button>
+        <button class="operator">*</button>
+        <button class="operator">-</button>
+        <button class="operator">+</button>
+
+        <button>7</button><button>8</button><button>9</button><button>.</button>
+        <button>4</button><button>5</button><button>6</button>
+        <button class="equal" onclick="calculate()">=</button>
+        <button>1</button><button>2</button><button>3</button>
+        <button class="zero">0</button>
+    </div>
+
+</div>
+
+<script>
+const display = document.getElementById("display");
+const sci = document.getElementById("sci");
+const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+let isDegree = true;
+
+/* INPUT */
+document.querySelectorAll(".buttons button, .operator").forEach(b => {
+    b.addEventListener("click", () => {
+        if (b.innerText !== "=") display.value += b.innerText;
+    });
+});
+
+function add(v){ display.value += v; }
+function clearDisplay(){ display.value = ""; }
+
+/* FACTORIAL */
+function factorial(n){
+    if(n < 0) return NaN;
+    return n <= 1 ? 1 : n * factorial(n - 1);
+}
+
+/* TRIG */
+function addTrig(fn){
+    display.value += fn + "(";
+}
+
+function sin(x){ return Math.sin(isDegree ? x * Math.PI/180 : x); }
+function cos(x){ return Math.cos(isDegree ? x * Math.PI/180 : x); }
+function tan(x){ return Math.tan(isDegree ? x * Math.PI/180 : x); }
+
+/* DEG / RAD */
+function toggleAngle(){
+    isDegree = !isDegree;
+    document.querySelector(".scientific button:nth-child(4)").innerText = isDegree ? "DEG" : "RAD";
+}
+
+/* CALC */
+function calculate(){
+    try{
+        let exp = display.value
+            .replace(/(\d+)!/g, "factorial($1)")
+            .replace(/sin\(/g,"sin(")
+            .replace(/cos\(/g,"cos(")
+            .replace(/tan\(/g,"tan(");
+        display.value = eval(exp);
+    }catch{
+        display.value = "Error";
+    }
+}
+
+/* SCI */
+function toggleSci(){
+    sci.classList.toggle("active");
+    localStorage.setItem("sci", sci.classList.contains("active"));
+}
+
+/* THEME */
+function applySystemTheme(){
+    document.body.className = prefersDark.matches ? "" : "light";
+}
+
+function setTheme(t){
+    localStorage.setItem("theme", t);
+    document.body.className = "";
+    if(t === "light") document.body.classList.add("light");
+    if(t === "neon") document.body.classList.add("neon");
+    if(t === "minecraft") document.body.classList.add("minecraft");
+    if(t === "auto") applySystemTheme();
+}
+
+/* LOAD */
+setTheme(localStorage.getItem("theme") || "auto");
+if(localStorage.getItem("sci") === "true") sci.classList.add("active");
+
+prefersDark.addEventListener("change", () => {
+    if(localStorage.getItem("theme") === "auto") applySystemTheme();
+});
+
+/* KEYBOARD */
+document.addEventListener("keydown", e => {
+    if("0123456789+-*/().!".includes(e.key)) display.value += e.key;
+    if(e.key === "Enter") calculate();
+    if(e.key === "Backspace") display.value = display.value.slice(0,-1);
+    if(e.key === "Escape") display.value = "";
+});
+</script>
+
+</body>
+</html>
